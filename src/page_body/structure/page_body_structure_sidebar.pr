@@ -9,7 +9,6 @@
 {[ let shouldShowTabbar = ds.documentationConfiguration().settings.tabbedNavigation /]}
 {[ let documentationRoot = ds.rootDocumentationGroup() /]}
 
-{[ let isGroupOpen = pageOrGroupActiveInContext(page, item) /]}
 
 
 {[ if context.groupId ]}
