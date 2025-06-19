@@ -105,23 +105,27 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    function collapseDescendants(element) {
+        // Collapse all descendant group-items
+        element.querySelectorAll('.group-item.expanded').forEach(function(desc) {
+            desc.classList.remove('expanded');
+            var descChildren = desc.querySelector('.group-children');
+            if (descChildren) descChildren.style.display = 'none';
+        });
+    }
+
     document.querySelectorAll('.group-toggle').forEach(function(toggle) {
         toggle.addEventListener('click', function() {
             var parent = toggle.closest('.group-item');
-            var children = parent.querySelector('.group-children');
+            var children = parent.querySelector(':scope > .group-children');
             var isExpanded = parent.classList.contains('expanded');
             if (!isExpanded) {
                 children.style.display = 'block';
                 parent.classList.add('expanded');
             } else {
-                children.style.display = 'none';
                 parent.classList.remove('expanded');
-                // Collapse all descendant groups as well
-                children.querySelectorAll('.group-item.expanded').forEach(function(desc) {
-                    desc.classList.remove('expanded');
-                    var descChildren = desc.querySelector('.group-children');
-                    if (descChildren) descChildren.style.display = 'none';
-                });
+                children.style.display = 'none';
+                collapseDescendants(children);
             }
         });
         // Optional: allow keyboard navigation
