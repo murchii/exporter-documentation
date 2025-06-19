@@ -8,12 +8,7 @@
 {[ let showSectionLabel = configuration.navigationShowSectionLabel /]}
 {[ let shouldShowTabbar = ds.documentationConfiguration().settings.tabbedNavigation /]}
 {[ let documentationRoot = ds.rootDocumentationGroup() /]}
-{[ let openGroups = context.openGroups || {} /]}
-{[ let toggleGroup = (groupId) => {
-    let newOpenGroups = { ...openGroups }
-    newOpenGroups[groupId] = !openGroups[groupId]
-    context.openGroups = newOpenGroups
-} /]}
+
 
 {[ if context.groupId ]}
     {* If we pass id of a group, we can request it directly *}
@@ -59,7 +54,7 @@
             {[ let itemId = item.id /]}
             {[ let showTabsInNavigation = ((item.groupBehavior !== "Tabs") || (showTabs && item.groupBehavior === "Tabs")) /]}
             {[ let itemTitle = resolveMenuLabel(item, documentationRoot, configuration.navigationOverrideHomepageLabel) /]}
-            {[ let isGroupOpen = openGroups[itemId] || false /]}
+            {[ let isGroupOpen = pageOrGroupActiveInContext(page, item) /]}
 
             {[ if item.type.equals("Page") ]}
                 <li class="nav-item{{ isTab === true ? " is-tab" : "" }}">
@@ -72,20 +67,15 @@
                 </li>
             {[ else ]}
                 <li class="nav-item{{ (isGroupOpen ? " group-open"  : "") }}">
-                    <a
-                        class="nav-link group{{ activeClass }}"
-                        href="javascript:void(0);"
-                        onclick="{[ toggleGroup(itemId) /]}"
-                        style="cursor: pointer;"
-                    >
+                    <span class="nav-link group{{ activeClass }}" style="cursor: default;">
                         <span>
                             {{ itemTitle }}
                             {[ if isPrivate ]}<span class="icon-lock">{[ inject "icon_lock" context configuration /]}</span>{[/]}
                         </span>
                         {[ if showTabsInNavigation ]}<span class="icon">{[ inject "icon_chevron_right" context configuration /]}</span>{[/]}
-                    </a>
+                    </span>
                     {[ if (isGroupOpen && showTabsInNavigation) ]}
-                        {[ let data = { "page": page, "groupId": itemId, "openGroups": openGroups } /]}
+                        {[ let data = { "page": page, "groupId": itemId } /]}
                         {[ inject "page_body_structure_sidebar" context data /]}
                     {[/]}
                 </li>
