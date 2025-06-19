@@ -105,29 +105,17 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    function collapseDescendants(element) {
-        if (!element) return;
-        element.querySelectorAll('.group-item.expanded').forEach(function(desc) {
-            desc.classList.remove('expanded');
-            var descChildren = desc.querySelector('.group-children');
-            if (descChildren) descChildren.style.display = 'none';
-        });
-    }
-
     document.querySelectorAll('.group-toggle').forEach(function(toggle) {
         toggle.addEventListener('click', function() {
             var parent = toggle.closest('.group-item');
             var children = parent.querySelector('.group-children');
             var isExpanded = parent.classList.contains('expanded');
             if (!isExpanded) {
-                if (children) children.style.display = 'block';
+                children.style.display = 'block';
                 parent.classList.add('expanded');
             } else {
+                children.style.display = 'none';
                 parent.classList.remove('expanded');
-                if (children) {
-                    children.style.display = 'none';
-                    collapseDescendants(children);
-                }
             }
         });
         // Optional: allow keyboard navigation
@@ -140,7 +128,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
 <style>
 .group-item .chevron-icon {
   transition: transform 0.2s;
