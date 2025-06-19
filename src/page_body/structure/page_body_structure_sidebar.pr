@@ -116,6 +116,12 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 children.style.display = 'none';
                 parent.classList.remove('expanded');
+                // Collapse all descendant groups as well
+                children.querySelectorAll('.group-item.expanded').forEach(function(desc) {
+                    desc.classList.remove('expanded');
+                    var descChildren = desc.querySelector('.group-children');
+                    if (descChildren) descChildren.style.display = 'none';
+                });
             }
         });
         // Optional: allow keyboard navigation
