@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.group-toggle').forEach(function(toggle) {
         toggle.addEventListener('click', function() {
             var parent = toggle.closest('.group-item');
-            var children = parent.querySelector(':scope > .group-children');
+            var children = parent.querySelector('.group-children');
             var isExpanded = parent.classList.contains('expanded');
             if (!isExpanded) {
                 children.style.display = 'block';
