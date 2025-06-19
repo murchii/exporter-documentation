@@ -122,6 +122,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+</script>
+<style>
 .group-item .chevron-icon {
   transition: transform 0.2s;
   display: inline-block;
@@ -132,4 +134,4 @@ document.addEventListener('DOMContentLoaded', function() {
 .group-item .chevron-icon {
   transform: rotate(0deg);
 }
-</script>
+</style>
