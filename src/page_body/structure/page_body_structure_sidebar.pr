@@ -97,7 +97,7 @@
     </div>
 {[/]}
 
-// Add this to your main layout or sidebar template
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.group-toggle').forEach(function(toggle) {
