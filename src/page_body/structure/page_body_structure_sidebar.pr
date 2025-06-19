@@ -79,8 +79,28 @@
                     <span class="icon chevron-icon">{[ inject "icon_chevron_right" context configuration /]}</span>
                 </div>
                 <ul class="nav group-children" style="display: {{ isGroupOpen ? "block" : "none" }};">
-                    {[ let data = { "page": page, "groupId": itemId } /]}
-                    {[ inject "page_body_structure_sidebar" context data /]}
+                    {[ for child in item.children ]}
+                        {[ if isExportable(child) ]}
+                            {[ let childActive = pageOrGroupActiveInContext(page, child) /]}
+                            {[ let childActiveClass = (childActive === true ? " active" : "") /]}
+                            {[ let childIsTab = (child.parent && child.parent.groupBehavior === "Tabs" ? true : false) /]}
+                            {[ let childIsPrivate = (child.configuration && child.configuration.isPrivate ? true : false) /]}
+                            {[ let childTitle = resolveMenuLabel(child, documentationRoot, configuration.navigationOverrideHomepageLabel) /]}
+                            {[ if child.type.equals("Page") ]}
+                                <li class="nav-item{{ childIsTab ? " is-tab" : "" }}">
+                                    <a class="nav-link{{ childActiveClass }}" href="{{ pageUrl(child, ds.documentationDomain()) }}">
+                                        <span>
+                                            {{ childTitle }}
+                                            {[ if childIsPrivate ]}
+                                                <span class="icon-lock">{[ inject "icon_lock" context configuration /]}</span>
+                                            {[/]}
+                                        </span>
+                                    </a>
+                                </li>
+                            {[/]}
+                            {* If you want to show nested groups as static, you can add more logic here, but don't add expand/collapse *}
+                        {[/]}
+                    {[/]}
                 </ul>
             </li>
         {[/]}
@@ -105,17 +125,29 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    function collapseDescendants(element) {
+        if (!element) return;
+        element.querySelectorAll('.group-item.expanded').forEach(function(desc) {
+            desc.classList.remove('expanded');
+            var descChildren = desc.querySelector('.group-children');
+            if (descChildren) descChildren.style.display = 'none';
+        });
+    }
+
     document.querySelectorAll('.group-toggle').forEach(function(toggle) {
         toggle.addEventListener('click', function() {
             var parent = toggle.closest('.group-item');
             var children = parent.querySelector('.group-children');
             var isExpanded = parent.classList.contains('expanded');
             if (!isExpanded) {
-                children.style.display = 'block';
+                if (children) children.style.display = 'block';
                 parent.classList.add('expanded');
             } else {
-                children.style.display = 'none';
                 parent.classList.remove('expanded');
+                if (children) {
+                    children.style.display = 'none';
+                    collapseDescendants(children);
+                }
             }
         });
         // Optional: allow keyboard navigation
@@ -128,6 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
 <style>
 .group-item .chevron-icon {
   transition: transform 0.2s;
