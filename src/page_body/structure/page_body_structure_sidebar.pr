@@ -71,7 +71,7 @@
                         {{ itemTitle }}
                         {[ if isPrivate ]}<span class="icon-lock">{[ inject "icon_lock" context configuration /]}</span>{[/]}
                     </span>
-                    <span class="icon">{[ inject "icon_chevron_right" context configuration /]}</span>
+                    <span class="icon chevron-icon">{[ inject "icon_chevron_right" context configuration /]}</span>
                 </div>
                 <ul class="nav group-children" style="display: none;">
                     {[ let data = { "page": page, "groupId": itemId } /]}
@@ -121,4 +121,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+.group-item .chevron-icon {
+  transition: transform 0.2s;
+  display: inline-block;
+}
+.group-item.expanded .chevron-icon {
+  transform: rotate(90deg);
+}
+.group-item .chevron-icon {
+  transform: rotate(0deg);
+}
 </script>
