@@ -106,7 +106,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     function collapseDescendants(element) {
-        // Collapse all descendant group-items
+        if (!element) return;
         element.querySelectorAll('.group-item.expanded').forEach(function(desc) {
             desc.classList.remove('expanded');
             var descChildren = desc.querySelector('.group-children');
@@ -120,12 +120,14 @@ document.addEventListener('DOMContentLoaded', function() {
             var children = parent.querySelector('.group-children');
             var isExpanded = parent.classList.contains('expanded');
             if (!isExpanded) {
-                children.style.display = 'block';
+                if (children) children.style.display = 'block';
                 parent.classList.add('expanded');
             } else {
                 parent.classList.remove('expanded');
-                children.style.display = 'none';
-                collapseDescendants(children);
+                if (children) {
+                    children.style.display = 'none';
+                    collapseDescendants(children);
+                }
             }
         });
         // Optional: allow keyboard navigation
