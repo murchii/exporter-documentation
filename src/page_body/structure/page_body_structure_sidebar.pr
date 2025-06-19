@@ -114,8 +114,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 children.style.display = 'block';
                 parent.classList.add('expanded');
             } else {
-                children.style.display = 'none';
+                // Collapse all nested groups as well
                 parent.classList.remove('expanded');
+                children.style.display = 'none';
+                // Also collapse all descendant groups
+                children.querySelectorAll('.group-item.expanded').forEach(function(desc) {
+                    desc.classList.remove('expanded');
+                    var descChildren = desc.querySelector('.group-children');
+                    if (descChildren) descChildren.style.display = 'none';
+                });
             }
         });
         // Optional: allow keyboard navigation
@@ -128,6 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
 <style>
 .group-item .chevron-icon {
   transition: transform 0.2s;
