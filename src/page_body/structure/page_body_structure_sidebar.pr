@@ -44,44 +44,43 @@
         </div>
     {[/]} 
 
-    <ul class="nav{{ !shouldShowTabbar ? " with-root-level" : ""}}{{ hasFirstLevelFlat ? " first-level-flat" : ""}}">
-    {[ for item in rootGroup.children ]}
-        {[ if isExportable(item) ]}
-            {[ let isActive = pageOrGroupActiveInContext(page, item) /]}
-            {[ let activeClass = (isActive === true ? " active" : "") /]}
-            {[ let isTab = (item.parent.groupBehavior === "Tabs" ? true : false) /]}
-            {[ let isPrivate = (item.configuration && item.configuration.isPrivate ? true : false) /]}
-            {[ let itemId = item.id /]}
-            {[ let showTabsInNavigation = ((item.groupBehavior !== "Tabs") || (showTabs && item.groupBehavior === "Tabs")) /]}
-            {[ let itemTitle = resolveMenuLabel(item, documentationRoot, configuration.navigationOverrideHomepageLabel) /]}
-            {[ let isGroupOpen = pageOrGroupActiveInContext(page, item) /]}
+<ul class="nav{{ !shouldShowTabbar ? " with-root-level" : ""}}{{ hasFirstLevelFlat ? " first-level-flat" : ""}}">
+{[ for item in rootGroup.children ]}
+    {[ if isExportable(item) ]}
+        {[ let isActive = pageOrGroupActiveInContext(page, item) /]}
+        {[ let activeClass = (isActive === true ? " active" : "") /]}
+        {[ let isTab = (item.parent.groupBehavior === "Tabs" ? true : false) /]}
+        {[ let isPrivate = (item.configuration && item.configuration.isPrivate ? true : false) /]}
+        {[ let itemId = item.id /]}
+        {[ let itemTitle = resolveMenuLabel(item, documentationRoot, configuration.navigationOverrideHomepageLabel) /]}
+        {[ let hasChildren = (item.children && item.children.length > 0) /]}
 
-            {[ if item.type.equals("Page") ]}
-                <li class="nav-item{{ isTab === true ? " is-tab" : "" }}">
-                    <a class="nav-link{{ activeClass }}" href="{{ pageUrl(item, ds.documentationDomain()) }}">
-                        <span>
-                            {{ itemTitle }}
-                            {[ if isPrivate ]}<span class="icon-lock">{[ inject "icon_lock" context configuration /]}</span>{[/]}
-                        </span>
-                    </a>
-                </li>
-            {[ else ]}
-                <li class="nav-item{{ (isGroupOpen ? " group-open"  : "") }}">
-                    <span class="nav-link group{{ activeClass }}" style="cursor: default;">
-                        <span>
-                            {{ itemTitle }}
-                            {[ if isPrivate ]}<span class="icon-lock">{[ inject "icon_lock" context configuration /]}</span>{[/]}
-                        </span>
-                        {[ if showTabsInNavigation ]}<span class="icon">{[ inject "icon_chevron_right" context configuration /]}</span>{[/]}
+        {[ if item.type.equals("Page") ]}
+            <li class="nav-item{{ isTab === true ? " is-tab" : "" }}">
+                <a class="nav-link{{ activeClass }}" href="{{ pageUrl(item, ds.documentationDomain()) }}">
+                    <span>
+                        {{ itemTitle }}
+                        {[ if isPrivate ]}<span class="icon-lock">{[ inject "icon_lock" context configuration /]}</span>{[/]}
                     </span>
-                    {[ if (isGroupOpen) ]}
-                        {[ let data = { "page": page, "groupId": itemId } /]}
-                        {[ inject "page_body_structure_sidebar" context data /]}
-                    {[/]}
-                </li>
-            {[/]}
+                </a>
+            </li>
+        {[ else ]}
+            <li class="nav-item group-item" data-group-id="{{ itemId }}">
+                <div class="nav-link group{{ activeClass }} group-toggle" style="cursor: pointer;" tabindex="0">
+                    <span>
+                        {{ itemTitle }}
+                        {[ if isPrivate ]}<span class="icon-lock">{[ inject "icon_lock" context configuration /]}</span>{[/]}
+                    </span>
+                    <span class="icon">{[ inject "icon_chevron_right" context configuration /]}</span>
+                </div>
+                <ul class="nav group-children" style="display: none;">
+                    {[ let data = { "page": page, "groupId": itemId } /]}
+                    {[ inject "page_body_structure_sidebar" context data /]}
+                </ul>
+            </li>
         {[/]}
     {[/]}
+{[/]}
 </ul>
 {[ else ]}
     {[ if (isRootForTab && showSectionLabel) ]} 
@@ -97,3 +96,29 @@
         </a>
     </div>
 {[/]}
+
+// Add this to your main layout or sidebar template
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.group-toggle').forEach(function(toggle) {
+        toggle.addEventListener('click', function() {
+            var parent = toggle.closest('.group-item');
+            var children = parent.querySelector('.group-children');
+            if (children.style.display === 'none' || !children.style.display) {
+                children.style.display = 'block';
+                parent.classList.add('expanded');
+            } else {
+                children.style.display = 'none';
+                parent.classList.remove('expanded');
+            }
+        });
+        // Optional: allow keyboard navigation
+        toggle.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                toggle.click();
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>
