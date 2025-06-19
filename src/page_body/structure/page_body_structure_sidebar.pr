@@ -74,7 +74,7 @@
                         </span>
                         {[ if showTabsInNavigation ]}<span class="icon">{[ inject "icon_chevron_right" context configuration /]}</span>{[/]}
                     </span>
-                    {[ if (isGroupOpen && showTabsInNavigation) ]}
+                    {[ if (isGroupOpen) ]}
                         {[ let data = { "page": page, "groupId": itemId } /]}
                         {[ inject "page_body_structure_sidebar" context data /]}
                     {[/]}
