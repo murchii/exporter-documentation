@@ -68,8 +68,8 @@
                 </a>
             </li>
         {[ else ]}
-            <li class="nav-item group-item{{ isGroupOpen ? " expanded" : "" }}" data-group-id="{{ itemId }}">
-                <div class="nav-link group{{ activeClass }} group-toggle" style="cursor: pointer;" tabindex="0">
+            <li class="nav-item group-item" data-group-id="{{ itemId }}">
+               <ul class="nav group-children" style="display: none;">
                     <span>
                         {{ itemTitle }}
                         {[ if isPrivate ]}
@@ -134,8 +134,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Expand all groups that contain an active link on page load
+    document.querySelectorAll('.group-item').forEach(function(group) {
+        if (group.querySelector('.active')) {
+            group.classList.add('expanded');
+            var children = group.querySelector('.group-children');
+            if (children) children.style.display = 'block';
+        }
+    });
+
     document.querySelectorAll('.group-toggle').forEach(function(toggle) {
-        toggle.addEventListener('click', function() {
+        toggle.addEventListener('click', function(e) {
             var parent = toggle.closest('.group-item');
             var children = parent.querySelector('.group-children');
             var isExpanded = parent.classList.contains('expanded');
@@ -149,6 +158,53 @@ document.addEventListener('DOMContentLoaded', function() {
                     collapseDescendants(children);
                 }
             }
+            e.stopPropagation();
+        });
+        // Optional: allow keyboard navigation
+        toggle.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                toggle.click();
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script><script>
+document.addEventListener('DOMContentLoaded', function() {
+    function collapseDescendants(element) {
+        if (!element) return;
+        element.querySelectorAll('.group-item.expanded').forEach(function(desc) {
+            desc.classList.remove('expanded');
+            var descChildren = desc.querySelector('.group-children');
+            if (descChildren) descChildren.style.display = 'none';
+        });
+    }
+
+    // Expand all groups that contain an active link on page load
+    document.querySelectorAll('.group-item').forEach(function(group) {
+        if (group.querySelector('.active')) {
+            group.classList.add('expanded');
+            var children = group.querySelector('.group-children');
+            if (children) children.style.display = 'block';
+        }
+    });
+
+    document.querySelectorAll('.group-toggle').forEach(function(toggle) {
+        toggle.addEventListener('click', function(e) {
+            var parent = toggle.closest('.group-item');
+            var children = parent.querySelector('.group-children');
+            var isExpanded = parent.classList.contains('expanded');
+            if (!isExpanded) {
+                if (children) children.style.display = 'block';
+                parent.classList.add('expanded');
+            } else {
+                parent.classList.remove('expanded');
+                if (children) {
+                    children.style.display = 'none';
+                    collapseDescendants(children);
+                }
+            }
+            e.stopPropagation();
         });
         // Optional: allow keyboard navigation
         toggle.addEventListener('keydown', function(e) {
