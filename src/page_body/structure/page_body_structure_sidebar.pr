@@ -54,36 +54,36 @@
         {[ let isPrivate = (item.configuration && item.configuration.isPrivate ? true : false) /]}
         {[ let itemId = item.id /]}
         {[ let itemTitle = resolveMenuLabel(item, documentationRoot, configuration.navigationOverrideHomepageLabel) /]}
+        {[ let isGroupOpen = (item.type.equals("Group") && pageOrGroupActiveInContext(page, item)) /]}
 
-
-{[ if item.type.equals("Page") ]}
-    <li class="nav-item{{ isTab ? " is-tab" : "" }}">
-        <a class="nav-link{{ activeClass }}" href="{{ pageUrl(item, ds.documentationDomain()) }}">
-            <span>
-                {{ itemTitle }}
-                {[ if isPrivate ]}
-                    <span class="icon-lock">{[ inject "icon_lock" context configuration /]}</span>
-                {[/]}
-            </span>
-        </a>
-    </li>
-{[ else ]}
-    <li class="nav-item group-item" data-group-id="{{ itemId }}">
-        <div class="nav-link group{{ activeClass }} group-toggle" style="cursor: pointer;" tabindex="0">
-            <span>
-                {{ itemTitle }}
-                {[ if isPrivate ]}
-                    <span class="icon-lock">{[ inject "icon_lock" context configuration /]}</span>
-                {[/]}
-            </span>
-            <span class="icon chevron-icon">{[ inject "icon_chevron_right" context configuration /]}</span>
-        </div>
-        <ul class="nav group-children" style="display: none;">
-            {[ let data = { "page": page, "groupId": itemId } /]}
-            {[ inject "page_body_structure_sidebar" context data /]}
-        </ul>
-    </li>
-{[/]}
+        {[ if item.type.equals("Page") ]}
+            <li class="nav-item{{ isTab ? " is-tab" : "" }}">
+                <a class="nav-link{{ activeClass }}" href="{{ pageUrl(item, ds.documentationDomain()) }}">
+                    <span>
+                        {{ itemTitle }}
+                        {[ if isPrivate ]}
+                            <span class="icon-lock">{[ inject "icon_lock" context configuration /]}</span>
+                        {[/]}
+                    </span>
+                </a>
+            </li>
+        {[ else ]}
+            <li class="nav-item group-item{{ isGroupOpen ? " expanded" : "" }}" data-group-id="{{ itemId }}">
+                <div class="nav-link group{{ activeClass }} group-toggle" style="cursor: pointer;" tabindex="0">
+                    <span>
+                        {{ itemTitle }}
+                        {[ if isPrivate ]}
+                            <span class="icon-lock">{[ inject "icon_lock" context configuration /]}</span>
+                        {[/]}
+                    </span>
+                    <span class="icon chevron-icon">{[ inject "icon_chevron_right" context configuration /]}</span>
+                </div>
+                <ul class="nav group-children" style="display: {{ isGroupOpen ? "block" : "none" }};">
+                    {[ let data = { "page": page, "groupId": itemId } /]}
+                    {[ inject "page_body_structure_sidebar" context data /]}
+                </ul>
+            </li>
+        {[/]}
     {[/]}
 {[/]}
 </ul>
@@ -106,7 +106,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     function collapseDescendants(element) {
-        if (!element) return;
+        // Collapse all descendant group-items
         element.querySelectorAll('.group-item.expanded').forEach(function(desc) {
             desc.classList.remove('expanded');
             var descChildren = desc.querySelector('.group-children');
@@ -120,14 +120,12 @@ document.addEventListener('DOMContentLoaded', function() {
             var children = parent.querySelector('.group-children');
             var isExpanded = parent.classList.contains('expanded');
             if (!isExpanded) {
-                if (children) children.style.display = 'block';
+                children.style.display = 'block';
                 parent.classList.add('expanded');
             } else {
                 parent.classList.remove('expanded');
-                if (children) {
-                    children.style.display = 'none';
-                    collapseDescendants(children);
-                }
+                children.style.display = 'none';
+                collapseDescendants(children);
             }
         });
         // Optional: allow keyboard navigation
